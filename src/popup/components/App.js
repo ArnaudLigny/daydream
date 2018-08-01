@@ -7,7 +7,7 @@ import styles from './App.css'
 
 registerLanguage('javascript', js)
 
-const tabs = ['Nightmare', 'Puppeteer']
+const tabs = ['Nightmare', 'Puppeteer', 'Cypress']
 
 const App = ({ onSelectTab, selectedTab, onRestart, recording }) => {
   let script = ''
@@ -15,6 +15,8 @@ const App = ({ onSelectTab, selectedTab, onRestart, recording }) => {
     script = getNightmare(recording)
   } else if (selectedTab === 'Puppeteer') {
     script = getPuppeteer(recording)
+  } else if (selectedTab === 'Cypress') {
+    script = getCypress(recording)
   }
 
   return (
@@ -108,6 +110,34 @@ ${recording.reduce((records, record, i) => {
 }, '')}
   await browser.close()
 })()`
+}
+
+function getCypress (recording) {
+  return `    cy.visit('START_URL')
+
+${recording.reduce((records, record, i) => {
+  const { action, url, selector, value } = record
+  let result = records
+  if (i !== records.length) result += '\n'
+
+  switch (action) {
+    case 'keydown':
+      result += `    cy.get('${selector}').type('${value}')`
+      break
+    case 'click':
+      result += `    cy.get('${selector}').click()`
+      break
+    case 'goto':
+      result += `    cy.visit('${url}')`
+      break
+    case 'reload':
+      result += `    cy.reload()`
+      break
+  }
+
+  return result
+}, '')}
+`
 }
 
 export default App
