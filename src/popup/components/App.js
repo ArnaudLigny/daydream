@@ -125,7 +125,7 @@ ${recording.reduce((records, record, i) => {
       result += `    cy.get('${selector}').type('${value}')`
       break
     case 'click':
-      result += `    cy.get('${selector}').click()`
+      result += `    cy.get('${selector}').click({force: true})`
       break
     case 'goto':
       //result += `    cy.visit('${url}')`
